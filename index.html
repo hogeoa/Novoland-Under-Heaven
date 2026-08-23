@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>구주천하(九州天下) - 세계관 백과사전</title>
+    <!-- 고풍스러운 한글 웹폰트 연동 -->
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2b2b2b;
+            --border-color: #dcdcdc;
+            --accent-color: #8b0000; /* 전통적인 붉은 낙관 색상 */
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --red-glow: rgba(139, 0, 0, 0.25);
+            --hover-bg: #faf9f6;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: '조선100년체', '조선일보명조', 'Gowun Batang', serif;
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.8;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        /* ================= 0. 인트로 오버레이 스타일 ================= */
+        #introOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease, transform 0.8s ease;
+        }
+
+        #introOverlay.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: scale(1.03);
+        }
+
+        .intro-box {
+            max-width: 620px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid #e0dbd0;
+            padding: 60px 40px;
+            background: #faf8f5;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            border-radius: 6px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .intro-box::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px dashed #d5d0c4;
+            pointer-events: none;
+        }
+
+        .intro-seal {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 48px;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .intro-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 4px;
+            margin: 0 0 12px 0;
+        }
+
+        .intro-sub {
+            font-size: 1.1rem;
+            color: #666666;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+        }
+
+        .intro-quote {
+            font-size: 1rem;
+            color: #555555;
+            line-height: 1.9;
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+
+        .enter-btn {
+            background-color: #ffffff;
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            padding: 14px 36px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 4px;
+            letter-spacing: 2px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            outline: none;
+        }
+
+        .enter-btn:hover {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            box-shadow: 0 0 18px var(--red-glow), 0 0 25px var(--gold-glow);
+            transform: translateY(-2px);
+        }
+
+        /* ================= 1. 전체 2단 레이아웃 ================= */
+        .layout-wrapper {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        /* 좌측 사이드바 목차칸 */
+        aside.sidebar {
+            width: 340px;
+            position: sticky;
+            top: 30px;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 25px 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            border-radius: 6px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        aside.sidebar header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 15px;
+        }
+
+        aside.sidebar h1 {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        aside.sidebar .subtitle {
+            font-size: 0.9rem;
+            color: #666666;
+            letter-spacing: 2px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            transition: all 0.3s;
+            background-color: #fafafa;
+            box-sizing: border-box;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 8px rgba(139, 0, 0, 0.15);
+        }
+
+        details {
+            margin-bottom: 10px;
+            border: 1px solid #eaeaea;
+            border-radius: 4px;
+            background-color: #ffffff;
+            transition: background-color 0.2s ease;
+        }
+
+        details[open] {
+            background-color: var(--hover-bg);
+            border-color: #d0d0d0;
+        }
+
+        summary {
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 12px 15px;
+            cursor: pointer;
+            outline: none;
+            color: #222222;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: color 0.3s;
+        }
+
+        summary:hover {
+            color: var(--accent-color);
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::after {
+            content: '+';
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        details[open] summary::after {
+            content: '−';
+        }
+
+        aside.sidebar ul {
+            margin: 0;
+            padding: 10px 15px 15px 25px;
+            border-top: 1px solid #eeeeee;
+            background-color: #ffffff;
+            list-style-type: square;
+        }
+
+        .category-group {
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            list-style-type: disc;
+            font-size: 0.95rem;
+        }
+
+        .sub-list {
+            margin-top: 4px;
+            margin-bottom: 8px;
+            padding-left: 15px;
+            border-top: none;
+            background-color: transparent;
+            list-style-type: circle;
+        }
+
+        .sub-list li, .normal-item {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #444444;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin-bottom: 5px;
+            display: block;
+            width: fit-content;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .sub-list li:hover, .normal-item:hover {
+            color: var(--accent-color);
+            background-color: rgba(212, 175, 55, 0.1);
+            text-shadow: 0 0 6px var(--red-glow), 0 0 12px var(--gold-glow);
+            transform: translateX(4px);
+        }
+
+        @keyframes luxuryFlash {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.03); color: #b8860b; text-shadow: 0 0 12px rgba(212, 175, 55, 0.9); }
+            100% { transform: scale(1); }
+        }
+
+        .clicked-flash {
+            animation: luxuryFlash 0.3s ease-out;
+        }
+
+        /* ================= 2. 우측 본문 영역 ================= */
+        main.main-content {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            padding: 50px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border-radius: 6px;
+            box-sizing: border-box;
+            min-width: 0;
+        }
+
+        .content-section {
+            margin-bottom: 60px;
+            padding-bottom: 50px;
+            border-bottom: 2px solid #e8e4dc;
+        }
+
+        .content-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: #333333;
+            line-height: 1.9;
+        }
+
+        .section-desc img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* 하단 푸터 */
+        footer {
+            max-width: 1400px;
+            margin: 60px auto 0 auto;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888888;
+            border-top: 1px solid #eee;
+            padding-top: 25px;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 950px) {
+            .layout-wrapper {
+                flex-direction: column;
+            }
+            aside.sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                max-height: none;
+                margin-bottom: 20px;
+            }
+            main.main-content {
+                padding: 25px;
+            }
+            .intro-title {
+                font-size: 2.2rem;
+            }
+            .intro-box {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ⛩️ 인트로 화면 오버레이 -->
+    <div id="introOverlay">
+        <div class="intro-box">
+            <div class="intro-seal">九</div>
+            <h1 class="intro-title">구주천하</h1>
+            <div class="intro-sub">九州天下 · 世界觀 辭典</div>
+            <div class="intro-quote">
+                천하의 기틀이 아홉 주로 나뉘고,<br>
+                영웅과 호걸들이 난세의 깃발을 든다.
+            </div>
+            <button id="enterBtn" class="enter-btn">進入 · 천하에 발을 들이다</button>
+        </div>
+    </div>
+
+    <!-- 메인 백과사전 페이지 -->
+    <div class="layout-wrapper">
+        <!-- 좌측 사이드바 목차칸 -->
+        <aside class="sidebar">
+            <header>
+                <h1>구주천하</h1>
+                <div class="subtitle">세계관 백과사전</div>
+            </header>
+
+            <!-- 검색창 -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="항목이나 키워드 검색...">
+            </div>
+
+            <nav id="tocContainer">
+                <!-- 一. 구주천하 -->
+                <details>
+                    <summary>一. 구주천하 | 九州天下</summary>
+                    <ul>
+                        <li class="normal-item" data-target="sec-1-1">문화 | 文化</li>
+                        <li class="normal-item" data-target="sec-1-2">정치 | 政治</li>
+                        <li class="normal-item" data-target="sec-1-3">경제 | 經濟</li>
+                        <li class="normal-item" data-target="sec-1-4">지리 | 地理</li>
+                        <li class="normal-item" data-target="sec-1-5">군사 | 軍事</li>
+                    </ul>
+                </details>
+
+                <!-- 二. 천왕조정 -->
+                <details>
+                    <summary>二. 천왕조정 | 天王朝廷</summary>
+                    <ul>
+                        <li class="category-group">천왕실 | 天王室
+                            <ul class="sub-list">
+                                <li data-target="sec-2-1-1">천왕실 인물 1</li>
+                                <li data-target="sec-2-1-2">천왕실 인물 2</li>
+                                <li data-target="sec-2-1-3">천왕실 인물 3</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">천자당 | 天子黨
+                            <ul class="sub-list">
+                                <li data-target="sec-2-2-1">천자당 인물 1</li>
+                                <li data-target="sec-2-2-2">천자당 인물 2</li>
+                                <li data-target="sec-2-2-3">천자당 인물 3</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">태자당 | 太子黨
+                            <ul class="sub-list">
+                                <li data-target="sec-2-3-1">태자당 인물 1</li>
+                                <li data-target="sec-2-3-2">태자당 인물 2</li>
+                                <li data-target="sec-2-3-3">태자당 인물 3</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">종백당 | 宗伯黨
+                            <ul class="sub-list">
+                                <li data-target="sec-2-4-1">종백당 인물 1</li>
+                                <li data-target="sec-2-4-2">종백당 인물 2</li>
+                                <li data-target="sec-2-4-3">종백당 인물 3</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </details>
+
+                <!-- 三. 삼십육번 -->
+                <details>
+                    <summary>三. 삼십육번 | 三十六番</summary>
+                    <ul>
+                        <li class="category-group">천중, 낙주 | 天中, 洛州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-1-1">낙주 제후 1</li>
+                                <li data-target="sec-3-1-2">낙주 제후 2</li>
+                                <li data-target="sec-3-1-3">낙주 제후 3</li>
+                                <li data-target="sec-3-1-4">낙주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">관서, 농주 | 關西, 隴州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-2-1">농주 제후 1</li>
+                                <li data-target="sec-3-2-2">농주 제후 2</li>
+                                <li data-target="sec-3-2-3">농주 제후 3</li>
+                                <li data-target="sec-3-2-4">농주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">산동, 대주 | 山東, 岱州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-3-1">대주 제후 1</li>
+                                <li data-target="sec-3-3-2">대주 제후 2</li>
+                                <li data-target="sec-3-3-3">대주 제후 3</li>
+                                <li data-target="sec-3-3-4">대주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">산서, 분주 | 山西, 汾州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-4-1">분주 제후 1</li>
+                                <li data-target="sec-3-4-2">분주 제후 2</li>
+                                <li data-target="sec-3-4-3">분주 제후 3</li>
+                                <li data-target="sec-3-4-4">분주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">화북, 기주 | 華北, 冀州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-5-1">기주 제후 1</li>
+                                <li data-target="sec-3-5-2">기주 제후 2</li>
+                                <li data-target="sec-3-5-3">기주 제후 3</li>
+                                <li data-target="sec-3-5-4">기주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">영동, 창주 | 嶺東, 滄州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-6-1">창주 제후 1</li>
+                                <li data-target="sec-3-6-2">창주 제후 2</li>
+                                <li data-target="sec-3-6-3">창주 제후 3</li>
+                                <li data-target="sec-3-6-4">창주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">호서, 택주 | 湖西, 澤州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-7-1">택주 제후 1</li>
+                                <li data-target="sec-3-7-2">택주 제후 2</li>
+                                <li data-target="sec-3-7-3">택주 제후 3</li>
+                                <li data-target="sec-3-7-4">택주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">운남, 전주 | 雲南, 滇州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-8-1">전주 제후 1</li>
+                                <li data-target="sec-3-8-2">전주 제후 2</li>
+                                <li data-target="sec-3-8-3">전주 제후 3</li>
+                                <li data-target="sec-3-8-4">전주 제후 4</li>
+                            </ul>
+                        </li>
+                        <li class="category-group">상해, 호주 | 上海, 滬州
+                            <ul class="sub-list">
+                                <li data-target="sec-3-9-1">호주 제후 1</li>
+                                <li data-target="sec-3-9-2">호주 제후 2</li>
+                                <li data-target="sec-3-9-3">호주 제후 3</li>
+                                <li data-target="sec-3-9-4">호주 제후 4</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </details>
+
+                <!-- 四. 사대기인 -->
+                <details>
+                    <summary>四. 사대기인 | 四大奇人</summary>
+                    <ul>
+                        <li class="normal-item" data-target="sec-4-1">거상 청진 | 巨商 靑珍</li>
+                        <li class="normal-item" data-target="sec-4-2">신의 백침 | 神醫 白箴</li>
+                        <li class="normal-item" data-target="sec-4-3">신선 적송 | 神仙 赤松</li>
+                        <li class="normal-item" data-target="sec-4-4">대협 흑산 | 大俠 黑山</li>
+                    </ul>
+                </details>
+
+                <!-- 五. 구류조사 -->
+                <details>
+                    <summary>五. 구류조사 | 九流祖師</summary>
+                    <ul>
+                        <li class="normal-item" data-target="sec-5-1">분가, 녹강자 | 分家, 綠江子</li>
+                        <li class="normal-item" data-target="sec-5-2">무가, 청계자 | 無家, 靑溪子</li>
+                        <li class="normal-item" data-target="sec-5-3">통가, 적곡자 | 統家, 赤谷子</li>
+                        <li class="normal-item" data-target="sec-5-4">이가, 홍곡자 | 利家, 紅谷子</li>
+                        <li class="normal-item" data-target="sec-5-5">화가, 화산자 | 和家, 花山子</li>
+                        <li class="normal-item" data-target="sec-5-6">현가, 흑산자 | 賢家, 黑山子</li>
+                        <li class="normal-item" data-target="sec-5-7">합가, 주악자 | 合家, 朱嶽子</li>
+                        <li class="normal-item" data-target="sec-5-8">공가, 황해자 | 共家, 黃海子</li>
+                        <li class="normal-item" data-target="sec-5-9">수가, 백하자 | 守家, 白河子</li>
+                    </ul>
+                </details>
+
+                <!-- 六. 하해삼웅 -->
+                <details>
+                    <summary>六. 하해삼웅 | 河海三雄</summary>
+                    <ul>
+                        <li class="normal-item" data-target="sec-6-1">요자귀 | 廖慈龜</li>
+                        <li class="normal-item" data-target="sec-6-2">감태령 | 甘太嶺</li>
+                        <li class="normal-item" data-target="sec-6-3">양망아 | 梁蟒兒</li>
+                    </ul>
+                </details>
+
+                <!-- 七. 강호사걸 -->
+                <details>
+                    <summary>七. 강호사걸 | 江湖四傑</summary>
+                    <ul>
+                        <li class="normal-item" data-target="sec-7-1">서장룡 | 徐藏龍</li>
+                        <li class="normal-item" data-target="sec-7-2">난유봉 | 欒留鳳</li>
+                        <li class="normal-item" data-target="sec-7-3">동혜린 | 董惠麟</li>
+                        <li class="normal-item" data-target="sec-7-4">맹궁호 | 孟窮虎</li>
+                    </ul>
+                </details>
+
+                <!-- 八. 매난국죽 -->
+                <details>
+                    <summary>八. 매난국죽 | 梅蘭菊竹</summary>
+                    <ul>
+                        <li class="normal-item" data-target="sec-8-1">성매, 담요 | 郕梅, 郯燿</li>
+                        <li class="normal-item" data-target="sec-8-2">란, 소유 | 蘭, 蘇喩</li>
+                        <li class="normal-item" data-target="sec-8-3">허수, 국양 | 菊穰, 許穗</li>
+                        <li class="normal-item" data-target="sec-8-4">죽초, 양철 | 竹樵, 揚鐵</li>
+                    </ul>
+                </details>
+
+                <!-- 九. 세외군왕 -->
+                <details>
+                    <summary>九. 세외군왕 | 世外君王</summary>
+                    <ul>
+                        <li class="normal-item" data-target="sec-9-1">아사다라 님검 미루 | 尾漊</li>
+                        <li class="normal-item" data-target="sec-9-2">비엣랑 훙브엉 훙바오 | 雄寶</li>
+                        <li class="normal-item" data-target="sec-9-3">포벤 첸포 친링 | 欽陵</li>
+                        <li class="normal-item" data-target="sec-9-4">칸누 칸 바가투르 | 把兒壇</li>
+                    </ul>
+                </details>
+            </nav>
+        </aside>
+
+        <!-- 우측 본문 영역 -->
+        <main class="main-content">
+            <!-- 一. 구주천하 -->
+            <section id="sec-1-1" class="content-section">
+                <h2 class="section-title">문화 | 文化</h2>
+                <div class="section-desc">구주천하의 사상적 기반과 풍속에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-1-2" class="content-section">
+                <h2 class="section-title">정치 | 政治</h2>
+                <div class="section-desc">천왕조정과 각 세력 간의 정치적 구도에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-1-3" class="content-section">
+                <h2 class="section-title">경제 | 經濟</h2>
+                <div class="section-desc">구주천하의 무역, 화폐 및 경제 구조에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-1-4" class="content-section">
+                <h2 class="section-title">지리 | 地理</h2>
+                <div class="section-desc">구주의 광활한 영토와 주요 거점에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-1-5" class="content-section">
+                <h2 class="section-title">군사 | 軍事</h2>
+                <div class="section-desc">각 번진과 조정의 군사력, 병제에 대한 상세 설명입니다.</div>
+            </section>
+
+            <!-- 二. 천왕조정 -->
+            <section id="sec-2-1-1" class="content-section">
+                <h2 class="section-title">천왕실 인물 1</h2>
+                <div class="section-desc">천왕실 첫 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-1-2" class="content-section">
+                <h2 class="section-title">천왕실 인물 2</h2>
+                <div class="section-desc">천왕실 두 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-1-3" class="content-section">
+                <h2 class="section-title">천왕실 인물 3</h2>
+                <div class="section-desc">천왕실 세 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-2-1" class="content-section">
+                <h2 class="section-title">천자당 인물 1</h2>
+                <div class="section-desc">천자당 첫 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-2-2" class="content-section">
+                <h2 class="section-title">천자당 인물 2</h2>
+                <div class="section-desc">천자당 두 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-2-3" class="content-section">
+                <h2 class="section-title">천자당 인물 3</h2>
+                <div class="section-desc">천자당 세 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-3-1" class="content-section">
+                <h2 class="section-title">태자당 인물 1</h2>
+                <div class="section-desc">태자당 첫 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-3-2" class="content-section">
+                <h2 class="section-title">태자당 인물 2</h2>
+                <div class="section-desc">태자당 두 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-3-3" class="content-section">
+                <h2 class="section-title">태자당 인물 3</h2>
+                <div class="section-desc">태자당 세 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-4-1" class="content-section">
+                <h2 class="section-title">종백당 인물 1</h2>
+                <div class="section-desc">종백당 첫 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-4-2" class="content-section">
+                <h2 class="section-title">종백당 인물 2</h2>
+                <div class="section-desc">종백당 두 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-2-4-3" class="content-section">
+                <h2 class="section-title">종백당 인물 3</h2>
+                <div class="section-desc">종백당 세 번째 인물에 대한 상세 설정입니다.</div>
+            </section>
+
+            <!-- 三. 삼십육번 -->
+            <!-- 천중, 낙주 -->
+            <section id="sec-3-1-1" class="content-section">
+                <h2 class="section-title">천중 낙주 - 제후 1</h2>
+                <div class="section-desc">천중 낙주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-1-2" class="content-section">
+                <h2 class="section-title">천중 낙주 - 제후 2</h2>
+                <div class="section-desc">천중 낙주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-1-3" class="content-section">
+                <h2 class="section-title">천중 낙주 - 제후 3</h2>
+                <div class="section-desc">천중 낙주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-1-4" class="content-section">
+                <h2 class="section-title">천중 낙주 - 제후 4</h2>
+                <div class="section-desc">천중 낙주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 관서, 농주 -->
+            <section id="sec-3-2-1" class="content-section">
+                <h2 class="section-title">관서 농주 - 제후 1</h2>
+                <div class="section-desc">관서 농주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-2-2" class="content-section">
+                <h2 class="section-title">관서 농주 - 제후 2</h2>
+                <div class="section-desc">관서 농주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-2-3" class="content-section">
+                <h2 class="section-title">관서 농주 - 제후 3</h2>
+                <div class="section-desc">관서 농주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-2-4" class="content-section">
+                <h2 class="section-title">관서 농주 - 제후 4</h2>
+                <div class="section-desc">관서 농주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 산동, 대주 -->
+            <section id="sec-3-3-1" class="content-section">
+                <h2 class="section-title">산동 대주 - 제후 1</h2>
+                <div class="section-desc">산동 대주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-3-2" class="content-section">
+                <h2 class="section-title">산동 대주 - 제후 2</h2>
+                <div class="section-desc">산동 대주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-3-3" class="content-section">
+                <h2 class="section-title">산동 대주 - 제후 3</h2>
+                <div class="section-desc">산동 대주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-3-4" class="content-section">
+                <h2 class="section-title">산동 대주 - 제후 4</h2>
+                <div class="section-desc">산동 대주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 산서, 분주 -->
+            <section id="sec-3-4-1" class="content-section">
+                <h2 class="section-title">산서 분주 - 제후 1</h2>
+                <div class="section-desc">산서 분주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-4-2" class="content-section">
+                <h2 class="section-title">산서 분주 - 제후 2</h2>
+                <div class="section-desc">산서 분주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-4-3" class="content-section">
+                <h2 class="section-title">산서 분주 - 제후 3</h2>
+                <div class="section-desc">산서 분주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-4-4" class="content-section">
+                <h2 class="section-title">산서 분주 - 제후 4</h2>
+                <div class="section-desc">산서 분주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 화북, 기주 -->
+            <section id="sec-3-5-1" class="content-section">
+                <h2 class="section-title">화북 기주 - 제후 1</h2>
+                <div class="section-desc">화북 기주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-5-2" class="content-section">
+                <h2 class="section-title">화북 기주 - 제후 2</h2>
+                <div class="section-desc">화북 기주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-5-3" class="content-section">
+                <h2 class="section-title">화북 기주 - 제후 3</h2>
+                <div class="section-desc">화북 기주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-5-4" class="content-section">
+                <h2 class="section-title">화북 기주 - 제후 4</h2>
+                <div class="section-desc">화북 기주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 영동, 창주 -->
+            <section id="sec-3-6-1" class="content-section">
+                <h2 class="section-title">영동 창주 - 제후 1</h2>
+                <div class="section-desc">영동 창주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-6-2" class="content-section">
+                <h2 class="section-title">영동 창주 - 제후 2</h2>
+                <div class="section-desc">영동 창주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-6-3" class="content-section">
+                <h2 class="section-title">영동 창주 - 제후 3</h2>
+                <div class="section-desc">영동 창주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-6-4" class="content-section">
+                <h2 class="section-title">영동 창주 - 제후 4</h2>
+                <div class="section-desc">영동 창주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 호서, 택주 -->
+            <section id="sec-3-7-1" class="content-section">
+                <h2 class="section-title">호서 택주 - 제후 1</h2>
+                <div class="section-desc">호서 택주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-7-2" class="content-section">
+                <h2 class="section-title">호서 택주 - 제후 2</h2>
+                <div class="section-desc">호서 택주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-7-3" class="content-section">
+                <h2 class="section-title">호서 택주 - 제후 3</h2>
+                <div class="section-desc">호서 택주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-7-4" class="content-section">
+                <h2 class="section-title">호서 택주 - 제후 4</h2>
+                <div class="section-desc">호서 택주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 운남, 전주 -->
+            <section id="sec-3-8-1" class="content-section">
+                <h2 class="section-title">운남 전주 - 제후 1</h2>
+                <div class="section-desc">운남 전주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-8-2" class="content-section">
+                <h2 class="section-title">운남 전주 - 제후 2</h2>
+                <div class="section-desc">운남 전주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-8-3" class="content-section">
+                <h2 class="section-title">운남 전주 - 제후 3</h2>
+                <div class="section-desc">운남 전주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-8-4" class="content-section">
+                <h2 class="section-title">운남 전주 - 제후 4</h2>
+                <div class="section-desc">운남 전주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+            <!-- 상해, 호주 -->
+            <section id="sec-3-9-1" class="content-section">
+                <h2 class="section-title">상해 호주 - 제후 1</h2>
+                <div class="section-desc">상해 호주 제후 1에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-9-2" class="content-section">
+                <h2 class="section-title">상해 호주 - 제후 2</h2>
+                <div class="section-desc">상해 호주 제후 2에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-9-3" class="content-section">
+                <h2 class="section-title">상해 호주 - 제후 3</h2>
+                <div class="section-desc">상해 호주 제후 3에 대한 상세 설정입니다.</div>
+            </section>
+            <section id="sec-3-9-4" class="content-section">
+                <h2 class="section-title">상해 호주 - 제후 4</h2>
+                <div class="section-desc">상해 호주 제후 4에 대한 상세 설정입니다.</div>
+            </section>
+
+            <!-- 四. 사대기인 -->
+            <section id="sec-4-1" class="content-section">
+                <h2 class="section-title">거상 청진 | 巨商 靑珍</h2>
+                <div class="section-desc">천하의 재물을 주무르는 거상 청진에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-4-2" class="content-section">
+                <h2 class="section-title">신의 백침 | 神醫 白箴</h2>
+                <div class="section-desc">죽은 사람도 살린다는 명의 백침에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-4-3" class="content-section">
+                <h2 class="section-title">신선 적송 | 神仙 赤松</h2>
+                <div class="section-desc">세속을 초월한 비상의 경지에 오른 적송에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-4-4" class="content-section">
+                <h2 class="section-title">대협 흑산 | 大俠 黑山</h2>
+                <div class="section-desc">협의를 위해 홀로 칼을 쥐는 대협 흑산에 대한 상세 설명입니다.</div>
+            </section>
+
+            <!-- 五. 구류조사 -->
+            <section id="sec-5-1" class="content-section">
+                <h2 class="section-title">분가, 녹강자 | 分家, 綠江子</h2>
+                <div class="section-desc">분가 녹강자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-2" class="content-section">
+                <h2 class="section-title">무가, 청계자 | 無家, 靑溪子</h2>
+                <div class="section-desc">무가 청계자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-3" class="content-section">
+                <h2 class="section-title">통가, 적곡자 | 統家, 赤谷子</h2>
+                <div class="section-desc">통가 적곡자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-4" class="content-section">
+                <h2 class="section-title">이가, 홍곡자 | 利家, 紅谷子</h2>
+                <div class="section-desc">이가 홍곡자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-5" class="content-section">
+                <h2 class="section-title">화가, 화산자 | 和家, 花山子</h2>
+                <div class="section-desc">화가 화산자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-6" class="content-section">
+                <h2 class="section-title">현가, 흑산자 | 賢家, 黑山子</h2>
+                <div class="section-desc">현가 흑산자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-7" class="content-section">
+                <h2 class="section-title">합가, 주악자 | 合家, 朱嶽子</h2>
+                <div class="section-desc">합가 주악자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-8" class="content-section">
+                <h2 class="section-title">공가, 황해자 | 共家, 黃海子</h2>
+                <div class="section-desc">공가 황해자에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-5-9" class="content-section">
+                <h2 class="section-title">수가, 백하자 | 守家, 白河子</h2>
+                <div class="section-desc">수가 백하자에 대한 상세 설명입니다.</div>
+            </section>
+
+            <!-- 六. 하해삼웅 -->
+            <section id="sec-6-1" class="content-section">
+                <h2 class="section-title">요자귀 | 廖慈龜</h2>
+                <div class="section-desc">하해삼웅 요자귀에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-6-2" class="content-section">
+                <h2 class="section-title">감태령 | 甘太嶺</h2>
+                <div class="section-desc">하해삼웅 감태령에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-6-3" class="content-section">
+                <h2 class="section-title">양망아 | 梁蟒兒</h2>
+                <div class="section-desc">하해삼웅 양망아에 대한 상세 설명입니다.</div>
+            </section>
+
+            <!-- 七. 강호사걸 -->
+            <section id="sec-7-1" class="content-section">
+                <h2 class="section-title">서장룡 | 徐藏龍</h2>
+                <div class="section-desc">강호사걸 서장룡에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-7-2" class="content-section">
+                <h2 class="section-title">난유봉 | 欒留鳳</h2>
+                <div class="section-desc">강호사걸 난유봉에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-7-3" class="content-section">
+                <h2 class="section-title">동혜린 | 董惠麟</h2>
+                <div class="section-desc">강호사걸 동혜린에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-7-4" class="content-section">
+                <h2 class="section-title">맹궁호 | 孟窮虎</h2>
+                <div class="section-desc">강호사걸 맹궁호에 대한 상세 설명입니다.</div>
+            </section>
+
+            <!-- 八. 매난국죽 -->
+            <section id="sec-8-1" class="content-section">
+                <h2 class="section-title">성매, 담요 | 郕梅, 郯燿</h2>
+                <div class="section-desc">매난국죽 성매, 담요에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-8-2" class="content-section">
+                <h2 class="section-title">란, 소유 | 蘭, 蘇喩</h2>
+                <div class="section-desc">매난국죽 란, 소유에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-8-3" class="content-section">
+                <h2 class="section-title">허수, 국양 | 菊穰, 許穗</h2>
+                <div class="section-desc">매난국죽 허수, 국양에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-8-4" class="content-section">
+                <h2 class="section-title">죽초, 양철 | 竹樵, 揚鐵</h2>
+                <div class="section-desc">매난국죽 죽초, 양철에 대한 상세 설명입니다.</div>
+            </section>
+
+            <!-- 九. 세외군왕 -->
+            <section id="sec-9-1" class="content-section">
+                <h2 class="section-title">아사다라 님검 미루 | 尾漊</h2>
+                <div class="section-desc">세외군왕 아사다라 님검 미루에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-9-2" class="content-section">
+                <h2 class="section-title">비엣랑 훙브엉 훙바오 | 雄寶</h2>
+                <div class="section-desc">세외군왕 비엣랑 훙브엉 훙바오에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-9-3" class="content-section">
+                <h2 class="section-title">포벤 첸포 친링 | 欽陵</h2>
+                <div class="section-desc">세외군왕 포벤 첸포 친링에 대한 상세 설명입니다.</div>
+            </section>
+            <section id="sec-9-4" class="content-section">
+                <h2 class="section-title">칸누 칸 바가투르 | 把兒壇</h2>
+                <div class="section-desc">세외군왕 칸누 칸 바가투르에 대한 상세 설명입니다.</div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 하단 푸터 -->
+    <footer>
+        <p>Copyright © 2026 주린(朱麟). All rights reserved.</p>
+    </footer>
+
+    <script>
+        // ⛩️ 인트로 입장 버튼 클릭 시 부드럽게 화면 전환
+        const introOverlay = document.getElementById('introOverlay');
+        const enterBtn = document.getElementById('enterBtn');
+
+        enterBtn.addEventListener('click', () => {
+            introOverlay.classList.add('hide');
+        });
+
+        // 사이드바 목차 항목 클릭 시 해당 본문 섹션으로 부드럽게 스크롤 이동
+        const navItems = document.querySelectorAll('[data-target]');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                this.classList.add('clicked-flash');
+                setTimeout(() => {
+                    this.classList.remove('clicked-flash');
+                }, 300);
+
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 사이드바 실시간 검색 기능
+        const searchInput = document.getElementById('searchInput');
+        const detailsList = document.querySelectorAll('aside.sidebar details');
+
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase().trim();
+
+            detailsList.forEach(details => {
+                let detailsHasVisible = false;
+                const groups = details.querySelectorAll('.category-group');
+                const normalItems = details.querySelectorAll(':scope > ul > li:not(.category-group)');
+
+                groups.forEach(group => {
+                    const groupText = group.childNodes[0].textContent.toLowerCase();
+                    const subItems = group.querySelectorAll('.sub-list li');
+
+                    if (term === '') {
+                        group.style.display = '';
+                        subItems.forEach(sub => sub.style.display = '');
+                        detailsHasVisible = true;
+                    } else {
+                        let subVisibleCount = 0;
+                        subItems.forEach(sub => {
+                            if (sub.textContent.toLowerCase().includes(term) || groupText.includes(term)) {
+                                sub.style.display = '';
+                                subVisibleCount++;
+                            } else {
+                                sub.style.display = 'none';
+                            }
+                        });
+
+                        if (groupText.includes(term) || subVisibleCount > 0) {
+                            group.style.display = '';
+                            if (groupText.includes(term)) {
+                                subItems.forEach(sub => sub.style.display = '');
+                            }
+                            detailsHasVisible = true;
+                        } else {
+                            group.style.display = 'none';
+                        }
+                    }
+                });
+
+                normalItems.forEach(li => {
+                    if (term === '') {
+                        li.style.display = '';
+                        detailsHasVisible = true;
+                    } else {
+                        if (li.textContent.toLowerCase().includes(term)) {
+                            li.style.display = '';
+                            detailsHasVisible = true;
+                        } else {
+                            li.style.display = 'none';
+                        }
+                    }
+                });
+
+                if (term === '') {
+                    details.open = false;
+                    details.style.display = '';
+                } else if (detailsHasVisible) {
+                    details.open = true;
+                    details.style.display = '';
+                } else {
+                    details.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
