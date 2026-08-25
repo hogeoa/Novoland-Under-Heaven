@@ -371,39 +371,86 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        /* ================= 3. 우측 하단 BGM 컨트롤 플로팅 버튼 ================= */
-        .bgm-toggle-btn {
+        /* ================= 3. 우측 하단 미니 BGM 플레이어 위젯 ================= */
+        .bgm-player-container {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #ffffff;
+            background: #faf8f5;
             border: 2px solid var(--accent-color);
-            color: var(--accent-color);
-            font-size: 1.3rem;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border-radius: 30px;
+            padding: 8px 18px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             z-index: 1000;
             display: flex;
             align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .bgm-player-container:hover {
+            box-shadow: 0 0 15px var(--red-glow), 0 0 20px var(--gold-glow);
+        }
+
+        .bgm-title-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 220px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .bgm-icon {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+        }
+
+        .bgm-title-text {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #333333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        .bgm-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bgm-btn {
+            background: #ffffff;
+            border: 1px solid #dcdcdc;
+            color: var(--accent-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
             outline: none;
         }
 
-        .bgm-toggle-btn:hover {
+        .bgm-btn:hover {
             background-color: var(--accent-color);
             color: #ffffff;
-            box-shadow: 0 0 15px var(--red-glow), 0 0 20px var(--gold-glow);
-            transform: scale(1.1);
+            border-color: var(--accent-color);
+            transform: scale(1.08);
         }
 
-        .bgm-toggle-btn.muted {
-            opacity: 0.6;
-            border-color: #888888;
-            color: #888888;
+        .bgm-btn.play-toggle {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+            font-weight: bold;
         }
 
         footer {
@@ -443,23 +490,38 @@
             .main-banner-img {
                 max-height: 200px;
             }
-            .bgm-toggle-btn {
-                bottom: 20px;
-                right: 20px;
-                width: 44px;
-                height: 44px;
-                font-size: 1.1rem;
+            .bgm-player-container {
+                bottom: 15px;
+                right: 15px;
+                padding: 6px 12px;
+                gap: 8px;
+            }
+            .bgm-title-box {
+                max-width: 140px;
+            }
+            .bgm-title-text {
+                font-size: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- 🎵 배경음악 오디오 태그 (루프 재생) -->
-    <audio id="bgmAudio" loop preload="auto" src="bgm.mp3"></audio>
+    <!-- 🎵 배경음악 오디오 태그 -->
+    <audio id="bgmAudio" preload="auto"></audio>
 
-    <!-- 🎵 우측 하단 BGM 토글 버튼 -->
-    <button id="bgmToggleBtn" class="bgm-toggle-btn" title="배경음악 켜기/끄기">🎵</button>
+    <!-- 🎵 우측 하단 BGM 미니 플레이어 UI (노래 제목 표시 및 이전/재생/다음 컨트롤러) -->
+    <div class="bgm-player-container" id="bgmPlayer">
+        <div class="bgm-title-box">
+            <span class="bgm-icon">🎵</span>
+            <span class="bgm-title-text" id="bgmTitle">음악 대기 중...</span>
+        </div>
+        <div class="bgm-controls">
+            <button class="bgm-btn" id="prevBtn" title="이전 곡">⏮</button>
+            <button class="bgm-btn play-toggle" id="playToggleBtn" title="재생/일시정지">▶</button>
+            <button class="bgm-btn" id="nextBtn" title="다음 곡">⏭</button>
+        </div>
+    </div>
 
     <!-- ⛩️ 인트로 화면 오버레이 -->
     <div id="introOverlay">
@@ -760,7 +822,6 @@
             <section id="sec-2-2-1" class="content-section">
                 <h2 class="section-title">총재 곽앙</h2>
                 <div class="section-desc">
-                    <!-- 조연 이미지 분류: 조_번호 -->
                     <img src="구주천하%20주조연/조_32.png" alt="총재 곽앙">
                     <p>총재 곽앙에 대한 상세 설정입니다.</p>
                 </div>
@@ -856,7 +917,6 @@
             <section id="sec-3-2-1" class="content-section">
                 <h2 class="section-title">담공 담헌</h2>
                 <div class="section-desc">
-                    <!-- 주연 이미지 분류: 성명_1 -->
                     <img src="구주천하%20주조연/郯憲_1.png" alt="담공 담헌">
                     <p>담공 담헌에 대한 상세 설정입니다.</p>
                 </div>
@@ -878,7 +938,6 @@
             <section id="sec-3-2-4" class="content-section">
                 <h2 class="section-title">성후 성무</h2>
                 <div class="section-desc">
-                    <!-- 주연 이미지 분류: 성명_1 -->
                     <img src="구주천하%20주조연/郕武_1.png" alt="성후 성무">
                     <p>성후 성무에 대한 상세 설정입니다.</p>
                 </div>
@@ -937,7 +996,6 @@
             <section id="sec-3-4-4" class="content-section">
                 <h2 class="section-title">증후 증휘</h2>
                 <div class="section-desc">
-                    <!-- 주연 이미지 분류: 성명_1 -->
                     <img src="구주천하%20주조연/鄫徽_1.png" alt="증후 증휘">
                     <p>증후 증휘에 대한 상세 설정입니다.</p>
                 </div>
@@ -960,7 +1018,6 @@
             <section id="sec-3-5-3" class="content-section">
                 <h2 class="section-title">소백 소염</h2>
                 <div class="section-desc">
-                    <!-- 주연 이미지 분류: 성명_1 -->
                     <img src="구주천하%20주조연/邵焰_1.png" alt="소백 소염">
                     <p>소백 소염에 대한 상세 설정입니다.</p>
                 </div>
@@ -1055,7 +1112,6 @@
             <section id="sec-3-8-4" class="content-section">
                 <h2 class="section-title">운남왕 회계</h2>
                 <div class="section-desc">
-                    <!-- 주연 이미지 분류: 성명_1 -->
                     <img src="구주천하%20주조연/鄶谿_1.png" alt="운남왕 회계">
                     <p>운남왕 회계에 대한 상세 설정입니다.</p>
                 </div>
@@ -1257,7 +1313,7 @@
                 <h2 class="section-title">국양 허수 | 菊穰 許穗</h2>
                 <div class="section-desc">
                     <img src="구주천하%20주조연/許穗_1.png" alt="허수 국양">
-                    <p>매난국죽 허수 국양에 대한 상세 설명입니다.</p>
+                    <p>매난국죽 국양 허수에 대한 상세 설명입니다.</p>
                 </div>
             </section>
             <section id="sec-8-4" class="content-section">
@@ -1306,40 +1362,94 @@
     </footer>
 
     <script>
-        // 🎵 BGM 컨트롤 및 인트로 연동
+        // 🎵 다중 BGM 플레이리스트 목록 (실제 음원 파일명과 곡 제목에 맞춰 수정 가능)
+        const playlist = [
+            { title: "1. 伏龍騰起破雲翔 (복룡등기파운상)", src: "1. 伏龍騰起破雲翔 (복룡등기파운상).mp3" },
+            { title: "2. 鳳雛涵碧泛波光 (봉추함벽범파광)", src: "2. 鳳雛涵碧泛波光 (봉추함벽범파광).mp3" },
+            { title: "3. 鎭龜崇嶺倚天蒼 (진구숭령의천창)", src: "3. 鎭龜崇嶺倚天蒼 (진구숭령의천창).mp3" },
+            { title: "4. 隱麟神嶽瑞煙藏 (은린신악서연장)", src: "4. 隱麟神嶽瑞煙藏 (은린신악서연장).mp3" },
+            { title: "5. 潛蟒驚濤巨海茫 (잠망경도거해망)", src: "5. 潛蟒驚濤巨海茫 (잠망경도거해망).mp3" },
+            { title: "6. 臥虎雄關鎖八疆 (와호웅관쇄팔강)", src: "6. 臥虎雄關鎖八疆 (와호웅관쇄팔강).mp3" },
+            { title: "7. 白江雪浪淸江長 (백강설랑청강장)", src: "7. 白江雪浪淸江長 (백강설랑청강장).mp3" },
+            { title: "8. 雙江交匯勢無疆 (쌍강교회세무강)", src: "8. 雙江交匯勢無疆 (쌍강교회세무강).mp3" },
+            { title: "9. 太河滔滔動八荒 (태하도도동팔황)", src: "9. 太河滔滔動八荒 (태하도도동팔황).mp3" }
+        ];
+
+        let currentTrackIndex = 0;
+        const bgmAudio = document.getElementById('bgmAudio');
+        const bgmTitle = document.getElementById('bgmTitle');
+        const playToggleBtn = document.getElementById('playToggleBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
         const introOverlay = document.getElementById('introOverlay');
         const enterBtn = document.getElementById('enterBtn');
-        const bgmAudio = document.getElementById('bgmAudio');
-        const bgmToggleBtn = document.getElementById('bgmToggleBtn');
 
-        // [어서오세요] 버튼 클릭 시 인트로 사라짐 + BGM 자동 재생
-        enterBtn.addEventListener('click', () => {
-            introOverlay.classList.add('hide');
-            bgmAudio.play().catch(error => {
-                console.log("브라우저 자동 재생 제한으로 정지됨:", error);
+        // 트랙 로드 함수
+        function loadTrack(index) {
+            currentTrackIndex = index;
+            bgmAudio.src = playlist[currentTrackIndex].src;
+            bgmTitle.textContent = playlist[currentTrackIndex].title;
+        }
+
+        // 재생 함수
+        function playTrack() {
+            bgmAudio.play().then(() => {
+                playToggleBtn.textContent = '⏸';
+            }).catch(e => {
+                console.log("브라우저 자동 재생 제한:", e);
             });
+        }
+
+        // 일시정지 함수
+        function pauseTrack() {
+            bgmAudio.pause();
+            playToggleBtn.textContent = '▶';
+        }
+
+        // 재생/일시정지 토글 버튼 이벤트
+        playToggleBtn.addEventListener('click', () => {
+            if (bgmAudio.paused) {
+                playTrack();
+            } else {
+                pauseTrack();
+            }
         });
 
-        // 우측 하단 플로팅 버튼으로 BGM 켜기/끄기
-        bgmToggleBtn.addEventListener('click', () => {
-            if (bgmAudio.paused) {
-                bgmAudio.play();
-                bgmToggleBtn.textContent = '🎵';
-                bgmToggleBtn.classList.remove('muted');
-            } else {
-                bgmAudio.pause();
-                bgmToggleBtn.textContent = '🔇';
-                bgmToggleBtn.classList.add('muted');
-            }
+        // 이전 곡 버튼
+        prevBtn.addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIndex);
+            playTrack();
+        });
+
+        // 다음 곡 버튼
+        nextBtn.addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            playTrack();
+        });
+
+        // 한 곡이 끝나면 자동으로 다음 곡 재생
+        bgmAudio.addEventListener('ended', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            playTrack();
+        });
+
+        // 페이지 최초 로드시 1번 트랙 준비
+        loadTrack(0);
+
+        // [어서오세요] 버튼 클릭 시 인트로 닫힘 + 1번 곡 자동 시작
+        enterBtn.addEventListener('click', () => {
+            introOverlay.classList.add('hide');
+            playTrack();
         });
 
         // 사이드바 목차 항목 클릭 시 부드러운 스크롤 이동
         const navItems = document.querySelectorAll('[data-target]');
-
         navItems.forEach(item => {
             item.addEventListener('click', function(e) {
                 e.stopPropagation();
-                
                 this.classList.add('clicked-flash');
                 setTimeout(() => {
                     this.classList.remove('clicked-flash');
@@ -1347,7 +1457,6 @@
 
                 const targetId = this.getAttribute('data-target');
                 const targetElement = document.getElementById(targetId);
-
                 if (targetElement) {
                     targetElement.scrollIntoView({
                         behavior: 'smooth',
