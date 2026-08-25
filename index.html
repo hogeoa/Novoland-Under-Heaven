@@ -397,7 +397,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            max-width: 220px;
+            max-width: 200px;
             overflow: hidden;
             white-space: nowrap;
         }
@@ -453,6 +453,66 @@
             font-weight: bold;
         }
 
+        /* 🔊 볼륨 컨트롤러 스타일 */
+        .bgm-volume-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-left: 1px solid #e0dbd0;
+            padding-left: 10px;
+        }
+
+        .volume-icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 0;
+            color: #555;
+            outline: none;
+            transition: transform 0.2s;
+        }
+
+        .volume-icon-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 65px;
+            height: 4px;
+            background: #e0dbd0;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            border: none;
+        }
+
         footer {
             max-width: 1400px;
             margin: 60px auto 0 auto;
@@ -497,10 +557,13 @@
                 gap: 8px;
             }
             .bgm-title-box {
-                max-width: 140px;
+                max-width: 120px;
             }
             .bgm-title-text {
                 font-size: 0.8rem;
+            }
+            .volume-slider {
+                width: 45px;
             }
         }
     </style>
@@ -510,7 +573,7 @@
     <!-- 🎵 배경음악 오디오 태그 -->
     <audio id="bgmAudio" preload="auto"></audio>
 
-    <!-- 🎵 우측 하단 BGM 미니 플레이어 UI (노래 제목 표시 및 이전/재생/다음 컨트롤러) -->
+    <!-- 🎵 우측 하단 BGM 미니 플레이어 UI (노래 제목, 컨트롤러, 볼륨 조절 슬라이더) -->
     <div class="bgm-player-container" id="bgmPlayer">
         <div class="bgm-title-box">
             <span class="bgm-icon">🎵</span>
@@ -520,6 +583,11 @@
             <button class="bgm-btn" id="prevBtn" title="이전 곡">⏮</button>
             <button class="bgm-btn play-toggle" id="playToggleBtn" title="재생/일시정지">▶</button>
             <button class="bgm-btn" id="nextBtn" title="다음 곡">⏭</button>
+        </div>
+        <!-- 🔊 음량 조절부 -->
+        <div class="bgm-volume-box">
+            <button class="volume-icon-btn" id="volToggleBtn" title="음소거/해제">🔊</button>
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.5" title="음량 조절">
         </div>
     </div>
 
@@ -1362,7 +1430,7 @@
     </footer>
 
     <script>
-        // 🎵 다중 BGM 플레이리스트 목록 (실제 음원 파일명과 곡 제목에 맞춰 수정 가능)
+        // 🎵 다중 BGM 플레이리스트 목록 (실제 음원 파일명과 곡 제목)
         const playlist = [
             { title: "1. 伏龍騰起破雲翔 (복룡등기파운상)", src: "1. 伏龍騰起破雲翔 (복룡등기파운상).mp3" },
             { title: "2. 鳳雛涵碧泛波光 (봉추함벽범파광)", src: "2. 鳳雛涵碧泛波光 (봉추함벽범파광).mp3" },
@@ -1381,8 +1449,12 @@
         const playToggleBtn = document.getElementById('playToggleBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
+        const volToggleBtn = document.getElementById('volToggleBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
         const introOverlay = document.getElementById('introOverlay');
         const enterBtn = document.getElementById('enterBtn');
+
+        let previousVolume = 0.5;
 
         // 트랙 로드 함수
         function loadTrack(index) {
@@ -1405,6 +1477,37 @@
             bgmAudio.pause();
             playToggleBtn.textContent = '▶';
         }
+
+        // 🔊 볼륨 설정 함수
+        function updateVolumeIcon(vol) {
+            if (vol === 0) {
+                volToggleBtn.textContent = '🔇';
+            } else if (vol < 0.4) {
+                volToggleBtn.textContent = '🔉';
+            } else {
+                volToggleBtn.textContent = '🔊';
+            }
+        }
+
+        volumeSlider.addEventListener('input', (e) => {
+            const vol = parseFloat(e.target.value);
+            bgmAudio.volume = vol;
+            updateVolumeIcon(vol);
+            if (vol > 0) previousVolume = vol;
+        });
+
+        volToggleBtn.addEventListener('click', () => {
+            if (bgmAudio.volume > 0) {
+                previousVolume = bgmAudio.volume;
+                bgmAudio.volume = 0;
+                volumeSlider.value = 0;
+                updateVolumeIcon(0);
+            } else {
+                bgmAudio.volume = previousVolume || 0.5;
+                volumeSlider.value = bgmAudio.volume;
+                updateVolumeIcon(bgmAudio.volume);
+            }
+        });
 
         // 재생/일시정지 토글 버튼 이벤트
         playToggleBtn.addEventListener('click', () => {
@@ -1436,7 +1539,8 @@
             playTrack();
         });
 
-        // 페이지 최초 로드시 1번 트랙 준비
+        // 페이지 최초 로드시 기본 트랙 및 볼륨 세팅
+        bgmAudio.volume = 0.5;
         loadTrack(0);
 
         // [어서오세요] 버튼 클릭 시 인트로 닫힘 + 1번 곡 자동 시작
